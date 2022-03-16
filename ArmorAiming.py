@@ -10,7 +10,6 @@ from ArmorsInfo import Armors, Const, Time
 
 
 class AimingEnv(gym.Env[np.float, np.float]):
-    # metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 50}
 
     def __init__(self):
         self.gravitational_acceleration = glm.vec3(0, Const.Gravity, 0)
