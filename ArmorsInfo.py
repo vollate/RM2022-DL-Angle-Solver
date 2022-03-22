@@ -75,6 +75,7 @@ class Armors:
                 break
             bullet_speed += Time.VerifyUpdateTime * net_acceleration
             passed_verify_time += Time.VerifyUpdateTime
+        print(min_distance)
         return 150 * (0.1 - min_distance)
 
     def get_closest_armor(self) -> glm.vec3:

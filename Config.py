@@ -18,6 +18,7 @@ class Const:
                   glm.vec3(0, CarWidth / 2, 0),
                   glm.vec3(-CarLength / 2, 0, 0),
                   glm.vec3(0, -CarWidth / 2, 0)]
+    InitialBulletTransform=glm.vec3(0,0,0)
 
     Gravity = 9.8
     BulletMass = 1.1  # todo
