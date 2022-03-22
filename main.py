@@ -4,9 +4,9 @@ from ArmorAiming import AimingEnv, Time, Const
 
 env = AimingEnv()
 
-while True:
-    env.reset()
-    a = 1
+# while True:
+#     env.reset()
+#     a = 1
 
 model = PPO('MlpPolicy', env, verbose=1)
 model.learn(total_timesteps=Time.TrainTime)

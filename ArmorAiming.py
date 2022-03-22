@@ -9,7 +9,7 @@ from gym.utils import seeding
 from ArmorsInfo import Armors, Const, Time
 
 
-class AimingEnv(gym.Env[float, float]):
+class AimingEnv(gym.Env):
 
     def __init__(self):
         self.gravitational_acceleration = glm.vec3(0, Const.Gravity, 0)
@@ -30,10 +30,6 @@ class AimingEnv(gym.Env[float, float]):
             dtype=float)
 
     def step(self, action):
-
-        err_msg = f"{action!r} ({type(action)}) invalid"
-        assert self.action_space.contains(action), err_msg
-        assert self.observation_env is not None, "Call reset before using step method."
 
         yaw = action[0]
         pitch = action[1]
@@ -56,12 +52,12 @@ class AimingEnv(gym.Env[float, float]):
             return_info: bool = False,
             options: Optional[dict] = None,
     ):
-        super().reset(seed=seed)
+        # super().reset(seed=seed)
         self.hostile_armors.reset(glm.vec3(self.r_init(Const.DistanceRange), 0, self.r_init(Const.DistanceRange)))
         self.imu_speed = glm.vec3(self.r_init(Const.IMU_SpeedRange), 0, self.r_init(Const.IMU_SpeedRange))
         temp_vector = self.hostile_armors.get_closest_armor()
         self.angular_speed = self.r_init(Const.AngularSpeedRange)
-        self.bullet_speed = self.r_init(Const.BulletSpeedRange)
+        self.bullet_speed = glm.vec3(self.r_init(Const.BulletSpeedRange),0,0)
         self.observation_env = np.array(
             [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y, self.imu_speed.z,
              self.r_init(Const.BulletSpeedRange)],
