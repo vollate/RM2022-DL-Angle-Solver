@@ -1,6 +1,7 @@
 from operator import index
 import glm
 import math
+import sys
 import numpy as np
 
 import ArmorsInfo
@@ -35,9 +36,8 @@ class Armors:
             self.transformed_vectors[i] = self.origin_vectors[i] + transform
         self.verify_vectors = None
 
-    def reset(self, transform=None):
-        if transform is not None:
-            self.transform = transform
+    def reset(self, transform):
+        self.transform = transform
         self.__init__(transform)
 
     def update_armors(self, angular_speed: float, imu_speed: glm.vec3) -> bool:
@@ -58,17 +58,19 @@ class Armors:
 
     def verify(self, angular_speed: float, initial_bullet_position: glm.vec3,
                initial_bullet_speed: glm.vec3):
-        self.verify_vectors = self.get_closest_armor()
+        self.verify_vectors = copy(self.origin_vectors)
+        # print(self.verify_vectors)
         passed_verify_time = 0.0
         min_distance = modulus_length(self.verify_vectors)
-        bullet_position = initial_bullet_position
+        # print(min_distance)
+        bullet_position = glm.vec3(initial_bullet_position)
         bullet_speed = initial_bullet_speed
         while passed_verify_time < Time.MaxVerifyTime:
             bullet_position += Time.VerifyUpdateTime * bullet_speed
             net_acceleration = Const.Gravity - Const.AirDrugForceConstance * modulus_length(bullet_speed,
                                                                                             True) / Const.BulletMass
             current_distance = modulus_length(
-                bullet_position + self.verify_update_armors(angular_speed))
+                bullet_position - self.verify_update_armors(angular_speed))
             if current_distance < min_distance:
                 min_distance = current_distance
             else:
@@ -76,15 +78,16 @@ class Armors:
             bullet_speed += Time.VerifyUpdateTime * net_acceleration
             passed_verify_time += Time.VerifyUpdateTime
         print(min_distance)
+        print("end")
         return 150 * (0.1 - min_distance)
 
     def get_closest_armor(self) -> glm.vec3:
-        min_distance = 0.0
+        min_distance = modulus_length(self.transformed_vectors[1])
         sign = -1
-        for i in range(len(self.origin_vectors)):
-            tem_distance = modulus_length(self.origin_vectors[i])
+        for i in range(1, 4):
+            tem_distance = modulus_length(self.transformed_vectors[i])
             if tem_distance < min_distance:
-                sign = index
+                sign = i
                 min_distance = tem_distance
         if sign != -1:
             return self.transformed_vectors[sign]

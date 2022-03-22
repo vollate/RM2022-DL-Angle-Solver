@@ -1,3 +1,5 @@
+import math
+
 import glm
 
 
@@ -18,7 +20,7 @@ class Const:
                   glm.vec3(0, CarWidth / 2, 0),
                   glm.vec3(-CarLength / 2, 0, 0),
                   glm.vec3(0, -CarWidth / 2, 0)]
-    InitialBulletTransform=glm.vec3(0,0,0)
+    InitialBulletTransform = glm.vec3(0, 0, 0)
 
     Gravity = 9.8
     BulletMass = 1.1  # todo
@@ -29,7 +31,8 @@ class Const:
 
     BulletSpeedRange = [15.0, 30.0]
     IMU_SpeedRange = [-2.0, 2.0]
-    AngularSpeedRange = [-1.0, 1.0]
+    IMU_VerticalSpeedRange = [0, 0]
+    AngularSpeedRange = [-math.pi, math.pi]
     DistanceRange = [-8.0, 8.0]
 
     SavePath = "test.pt"
