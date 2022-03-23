@@ -55,9 +55,9 @@ class Armors:
         return self.temp_origin_vector_list
 
     def verify(self, angular_speed: float, initial_bullet_position: glm.vec3,
-               initial_bullet_speed: glm.vec3):#todo: 加入变速小陀螺
+               initial_bullet_speed: glm.vec3):#todo: 加入变速小陀螺(画个饼先)
         self.temp_origin_vector_list = self.origin_vector_list[:]
-        
+
         passed_verify_time = 0.0
         min_distance = modulus_length(self.temp_origin_vector_list)#todo：fix this fucking stupid error
         bullet_position = glm.vec3(initial_bullet_position)
@@ -78,15 +78,15 @@ class Armors:
         print("end")
         return 150 * (0.1 - min_distance)
 
-    def get_closest_armor(self) -> glm.vec3:
-        min_distance = modulus_length(self.transformed_vector_list[1])
+    def get_closest_armor(self,vector_list) -> glm.vec3:
+        min_distance = modulus_length(vector_list[1])
         sign = -1
         for i in range(1, 4):
-            tem_distance = modulus_length(self.transformed_vector_list[i])
+            tem_distance = modulus_length(vector_list[i])
             if tem_distance < min_distance:
                 sign = i
                 min_distance = tem_distance
         if sign != -1:
-            return self.transformed_vector_list[sign]
+            return vector_list[sign]
         else:
             return glm.vec3()

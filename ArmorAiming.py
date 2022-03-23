@@ -55,7 +55,7 @@ class AimingEnv(gym.Env):
         # super().reset(seed=seed)
         self.hostile_armors.reset(glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
         self.imu_speed = glm.vec3(r_init(Const.IMU_SpeedRange), 0, r_init(Const.IMU_SpeedRange))
-        temp_vector = self.hostile_armors.get_closest_armor()
+        temp_vector = self.hostile_armors.get_closest_armor()#todo:fix
         self.angular_speed = r_init(Const.AngularSpeedRange)
         self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange),0,0)
         self.observation_env = np.array(
