@@ -56,7 +56,7 @@ class Armors:
 
     def verify(self, angular_speed: float, initial_bullet_position: glm.vec3,
                initial_bullet_speed: glm.vec3):
-        self.verify_vectors = self.get_closest_armor()#copy(self.origin_vectors)#todo
+        self.verify_vectors = self.get_closest_armor()#copy(self.origin_vectors)#todo：fix this fucking stupid error
         # print(self.verify_vectors)
         passed_verify_time = 0.0
         min_distance = modulus_length(self.verify_vectors)
