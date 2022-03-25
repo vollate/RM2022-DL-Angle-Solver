@@ -23,7 +23,7 @@ class Const:
     InitialBulletTransform = glm.vec3(0, 0, 0)
 
     Gravity = 9.8
-    BulletMass = 1.1  # todo
+    BulletMass = 0.0032
     GulletDragCoefficient = 0.47
     AirDensity = 1.293
     FrontalArea = 0.001385442  # 42mm bullet
