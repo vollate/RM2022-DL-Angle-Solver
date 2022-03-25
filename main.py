@@ -8,7 +8,7 @@ env = AimingEnv()
 #     env.reset()
 #     a = 1
 
-model = PPO('MlpPolicy', env, verbose=1)
+model = PPO('MlpPolicy', env, verbose=1, device="cpu")
 model.learn(total_timesteps=Time.TrainTime)
 model.save(Const.SavePath)
 obs = env.reset()

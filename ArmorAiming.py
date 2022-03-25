@@ -6,7 +6,7 @@ import gym
 from typing import Optional, Union
 from gym import logger, spaces
 from gym.utils import seeding
-from ArmorsInfo import Armors, Const, Time,r_init
+from ArmorsInfo import Armors, Const, Time, r_init, get_closest_armor
 
 
 class AimingEnv(gym.Env):
@@ -18,7 +18,10 @@ class AimingEnv(gym.Env):
         self.observation_env = None
         self.imu_speed = glm.vec3(r_init(Const.IMU_SpeedRange), r_init(Const.IMU_VerticalSpeedRange),
                                   r_init(Const.IMU_SpeedRange))
-        self.hostile_armors = Armors(glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
+        self.hostile_speed = glm.vec3(r_init(Const.HostileSpeedRange), r_init(Const.HostileVerticalSpeedRange),
+                                      r_init(Const.HostileSpeedRange))
+        self.hostile_armors = Armors(self.angular_speed, self.hostile_speed,
+                                     glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
 
         self.action_space = spaces.Box(low=np.array([-math.pi, -math.pi]), high=np.array([math.pi, math.pi]),
                                        dtype=float)
@@ -36,11 +39,10 @@ class AimingEnv(gym.Env):
         initial_imu_speed = glm.vec3(self.observation_env[3], self.observation_env[4], self.observation_env[5])
         initial_bullet_speed = glm.rotateX(glm.rotateY(self.bullet_speed, yaw), pitch) + initial_imu_speed
 
-        reward = self.hostile_armors.verify(self.angular_speed, Const.InitialBulletTransform,
+        reward = self.hostile_armors.verify(self.hostile_speed, self.angular_speed, Const.InitialBulletTransform,
                                             initial_bullet_speed)
-        done = self.hostile_armors.update_armors(self.angular_speed,
-                                                 self.imu_speed)
-        temp_vector = self.hostile_armors.get_closest_armor()
+        done = self.hostile_armors.update_armors(self.angular_speed, self.hostile_speed, self.imu_speed)  # todo: fix
+        temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)
         self.observation_env = [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y,
                                 self.imu_speed.z, r_init(Const.BulletSpeedRange)]
         return np.array(self.observation_env, dtype=float), reward, done, {}
@@ -53,11 +55,12 @@ class AimingEnv(gym.Env):
             options: Optional[dict] = None,
     ):
         # super().reset(seed=seed)
-        self.hostile_armors.reset(glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
         self.imu_speed = glm.vec3(r_init(Const.IMU_SpeedRange), 0, r_init(Const.IMU_SpeedRange))
-        temp_vector = self.hostile_armors.get_closest_armor()#todo:fix
+        temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)  # todo:fix
         self.angular_speed = r_init(Const.AngularSpeedRange)
-        self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange),0,0)
+        self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange), 0, 0)
+        self.hostile_armors.reset(self.angular_speed, self.hostile_speed,
+                                  glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
         self.observation_env = np.array(
             [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y, self.imu_speed.z,
              r_init(Const.BulletSpeedRange)],
@@ -66,8 +69,6 @@ class AimingEnv(gym.Env):
             return self.observation_env
         else:
             return self.observation_env, {}
-
-   
 
     def render(self, mode="human"):
         return None
