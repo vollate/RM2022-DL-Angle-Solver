@@ -1,6 +1,8 @@
+from ctypes import Union
 import math
 import numpy as np
 import glm
+from pandas import date_range
 
 
 class Time:
@@ -10,10 +12,12 @@ class Time:
     MaxObservationTime = 10
     MaxVerifyTime = 2
 
-    TrainTime = 1000000
+    TrainTime = 10000000
 
 
 class Const:
+    PrintOut=False
+    
     CarLength = 0.57
     CarWidth = 0.43
     CarVectorList = [glm.vec3(CarLength / 2, 0, 0),
@@ -30,13 +34,15 @@ class Const:
     AirDrugForceConstance = 0.5 * GulletDragCoefficient * AirDensity * FrontalArea
 
     BulletSpeedRange = [15.0, 30.0]
-    IMU_SpeedRange = [-0.5, 0.5]
+    IMU_SpeedRange = [-0.2, 0.2]
     IMU_VerticalSpeedRange = [0, 0]
-    HostileSpeedRange = [-0.5, 0.5]
+    HostileSpeedRange = [-0.2, 0.2]
     HostileVerticalSpeedRange = [0, 0]
     AngularSpeedRange = [-math.pi, math.pi]
-    DistanceRange = [-5.0, 5.0]
+    DistanceRange = [0.7, 5.0]
 
 
-def r_init(data_range) -> float:  # random init
+def r_init(data_range,negative_range=False) -> float:  # random init
+    if negative_range:
+        return np.random.uniform(data_range[0], data_range[1])*np.random.choice([-1,1])
     return np.random.uniform(data_range[0], data_range[1])

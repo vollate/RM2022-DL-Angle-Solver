@@ -1,4 +1,5 @@
 from operator import index
+from black import out
 import glm
 import math
 from typing import List, Union
@@ -17,10 +18,8 @@ def unit_vector(vector: glm.vec3) -> glm.vec3:
 
 
 def beyond_range(data_range: Union[list, float], vector: glm.vec3) -> bool:
-    sign = False
-    for i in range(3):
-        sign = not (data_range[0] <= vector[i] <= data_range[1])
-    return sign
+    return not (data_range[0] <= vector[2] <= data_range[1]) or not (data_range[0] <= vector[0] <= data_range[1]) or not (-data_range[1]<=vector[0]<=-data_range[0])
+ 
 
 
 def get_closest_armor(vector_list: Union[list, glm.vec3]) -> glm.vec3:
@@ -36,10 +35,7 @@ def get_closest_armor(vector_list: Union[list, glm.vec3]) -> glm.vec3:
 
 class Armors:
 
-    def __init__(self, angular_speed: float, move_speed: glm.vec3, transform: glm.vec3, first_time=True):
-        if first_time:
-            self.length = Const.CarLength
-            self.width = Const.CarWidth
+    def __init__(self, angular_speed: float, move_speed: glm.vec3, transform: glm.vec3):
         self.transform = transform
         self.total_time = 0.0
         self.angular_speed = angular_speed
@@ -50,7 +46,7 @@ class Armors:
             self.transformed_vector_list[i] = self.origin_vector_list[i] + self.transform
 
     def reset(self, angular_speed: float, move_speed: glm.vec3, transform: glm.vec3):
-        self.__init__(angular_speed, move_speed, transform, False)
+        self.__init__(angular_speed, move_speed, transform)
 
     def update_armors(self, angular_speed: float, move_speed: glm.vec3, imu_speed: glm.vec3) -> bool:
         self.total_time += Time.ObservationUpdateTime
@@ -78,7 +74,7 @@ class Armors:
         return None
 
     def verify(self, hostile_speed: glm.vec3, angular_speed: float, initial_bullet_position: glm.vec3,
-               initial_bullet_speed: glm.vec3):  # todo: 加入变速小陀螺(画个饼先)
+               initial_bullet_speed: glm.vec3):  # todo: 加入变速小陀螺
         temp_origin_vector_list = self.origin_vector_list[:]
         temp_transform = self.transform
         temp_transformed_vector_list = [glm.vec3, glm.vec3, glm.vec3, glm.vec3]
@@ -104,6 +100,7 @@ class Armors:
                 reversed_direction = False
             else:
                 break
-        print(min_distance)
-        print("end")
+        if Const.PrintOut:
+            print(min_distance)
+            print("end")
         return 1500 * (0.05 - min_distance) if not reversed_direction else -150000 * min_distance
