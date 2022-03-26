@@ -12,7 +12,6 @@ from ArmorsInfo import Armors, Const, Time, r_init, get_closest_armor
 class AimingEnv(gym.Env):
 
     def __init__(self):
-        self.gravitational_acceleration = glm.vec3(0, Const.Gravity, 0)
         self.angular_speed = r_init(Const.AngularSpeedRange)
         self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange), 0, 0)
         self.observation_env = None
@@ -41,7 +40,7 @@ class AimingEnv(gym.Env):
 
         reward = self.hostile_armors.verify(self.hostile_speed, self.angular_speed, Const.InitialBulletTransform,
                                             initial_bullet_speed)
-        done = self.hostile_armors.update_armors(self.angular_speed, self.hostile_speed, self.imu_speed)  # todo: fix
+        done = self.hostile_armors.update_armors(self.angular_speed, self.hostile_speed, self.imu_speed)
         temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)
         self.observation_env = [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y,
                                 self.imu_speed.z, r_init(Const.BulletSpeedRange)]
@@ -54,13 +53,15 @@ class AimingEnv(gym.Env):
             return_info: bool = False,
             options: Optional[dict] = None,
     ):
-        # super().reset(seed=seed)
-        self.imu_speed = glm.vec3(r_init(Const.IMU_SpeedRange), 0, r_init(Const.IMU_SpeedRange))
-        temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)  # todo:fix
+        super().reset(seed=seed)
+        self.imu_speed = glm.vec3(r_init(Const.IMU_SpeedRange), r_init(Const.IMU_VerticalSpeedRange), r_init(Const.IMU_SpeedRange))
         self.angular_speed = r_init(Const.AngularSpeedRange)
+        self.hostile_speed = glm.vec3(r_init(Const.HostileSpeedRange), r_init(Const.HostileVerticalSpeedRange),
+                                      r_init(Const.HostileSpeedRange))
         self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange), 0, 0)
         self.hostile_armors.reset(self.angular_speed, self.hostile_speed,
                                   glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
+        temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)
         self.observation_env = np.array(
             [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y, self.imu_speed.z,
              r_init(Const.BulletSpeedRange)],

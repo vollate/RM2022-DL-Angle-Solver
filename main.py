@@ -1,18 +1,17 @@
-from stable_baselines3 import PPO
+import math
 
+from stable_baselines3 import A2C, DDPG, DQN, PPO
+import glm
 from ArmorAiming import AimingEnv, Time, Const
 
+path = "test.pt"
 env = AimingEnv()
 
-# while True:
-#     env.reset()
-#     a = 1
+model = PPO('MlpPolicy', env, verbose=1, device="auto")
+model.learn(total_timesteps=Time.TrainTime)
+model.save(path)
 
-# model = PPO('MlpPolicy', env, verbose=1, device="cpu")
-# model.learn(total_timesteps=Time.TrainTime)
-# model.save(Const.SavePath)
-
-model=PPO.load(Const.SavePath)
+model = PPO.load(path)
 obs = env.reset()
 
 for i in range(1000):

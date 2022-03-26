@@ -9,7 +9,7 @@ from Config import Const, Time, r_init
 
 def modulus_length(vector: glm.vec3, square: bool = False) -> float:
     root = 1 if square else 0.5
-    return math.pow(math.pow(vector[0], 2) + math.pow(vector[1], 2) + math.pow(vector[2], 2), root)
+    return math.pow(math.pow(vector.x, 2) + math.pow(vector.y, 2) + math.pow(vector.z, 2), root)
 
 
 def unit_vector(vector: glm.vec3) -> glm.vec3:
@@ -25,16 +25,13 @@ def beyond_range(data_range: Union[list, float], vector: glm.vec3) -> bool:
 
 def get_closest_armor(vector_list: Union[list, glm.vec3]) -> glm.vec3:
     min_distance = modulus_length(vector_list[1])
-    sign = -1
+    sign = 0
     for i in range(1, 4):
         tem_distance = modulus_length(vector_list[i])
         if tem_distance < min_distance:
-            sign = i
             min_distance = tem_distance
-    if sign != -1:
-        return vector_list[sign]
-    else:
-        return glm.vec3()
+            sign = i
+    return vector_list[sign]
 
 
 class Armors:
@@ -47,7 +44,7 @@ class Armors:
         self.total_time = 0.0
         self.angular_speed = angular_speed
         self.move_speed = move_speed
-        self.origin_vector_list = Const.CarVectorList
+        self.origin_vector_list = Const.CarVectorList[:]
         self.transformed_vector_list = [glm.vec3, glm.vec3, glm.vec3, glm.vec3]
         for i in range(len(self.origin_vector_list)):
             self.transformed_vector_list[i] = self.origin_vector_list[i] + self.transform
@@ -65,13 +62,14 @@ class Armors:
             return True
         else:
             for i in range(len(self.transformed_vector_list)):
-                self.transformed_vector_list[i] = glm.rotateY(self.origin_vector_list[i],
-                                                              self.angular_speed * self.total_time) + self.transform
+                self.origin_vector_list[i] = glm.rotateY(self.origin_vector_list[i],
+                                                         self.angular_speed * Time.ObservationUpdateTime)
+                self.transformed_vector_list[i] = self.origin_vector_list[i] + self.transform
             return False
 
     @staticmethod
     def verify_update_armors(temp_origin_vector_list, temp_transformed_vector_list, transform: glm.vec3,
-                             hostile_speed: glm.vec3, angular_speed: float):  # todo
+                             hostile_speed: glm.vec3, angular_speed: float):
         transform += Time.VerifyUpdateTime * hostile_speed
         for i in range(len(temp_origin_vector_list)):
             temp_origin_vector_list[i] = glm.rotateY(temp_origin_vector_list[i],
@@ -89,8 +87,8 @@ class Armors:
         min_distance = modulus_length(get_closest_armor(temp_transformed_vector_list))
         passed_verify_time = 0.0
         bullet_position = glm.vec3(initial_bullet_position)
-        bullet_speed = initial_bullet_speed
-        reversed_direction = True  # todo
+        bullet_speed = glm.vec3(initial_bullet_speed)
+        reversed_direction = True
 
         while passed_verify_time < Time.MaxVerifyTime:
             bullet_position += Time.VerifyUpdateTime * bullet_speed
@@ -106,6 +104,6 @@ class Armors:
                 reversed_direction = False
             else:
                 break
-        # print(min_distance)
-        # print("end")
+        print(min_distance)
+        print("end")
         return 1500 * (0.05 - min_distance) if not reversed_direction else -150000 * min_distance
