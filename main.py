@@ -1,12 +1,18 @@
-from stable_baselines3 import PPO
+import math
 
-from ArmorAiming import AimingEnv, Time,Const
+from stable_baselines3 import A2C, DDPG, DQN, PPO
+import glm
+from AimingEnv import AimingEnv, Time, Const
+
+path = "test.pt"
 
 env = AimingEnv()
 
 model = PPO('MlpPolicy', env, verbose=1)
 model.learn(total_timesteps=Time.TrainTime)
-model.save(Const.SavePath)
+model.save(path)
+
+model = PPO.load(path)
 obs = env.reset()
 
 for i in range(1000):
