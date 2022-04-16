@@ -20,7 +20,7 @@ class AimingEnv(gym.Env):
         self.hostile_armors = Armors(self.angular_speed, self.hostile_speed,
                                      glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
 
-        self.action_space = spaces.Box(low=np.array([-math.pi, -math.pi]), high=np.array([math.pi, math.pi]),
+        self.action_space = spaces.Box(low=np.array([-math.pi/2, -math.pi/2]), high=np.array([math.pi/2, math.pi/2]),
                                        dtype=float)
         self.observation_space = spaces.Box(
             low=np.array([-Const.DistanceRange[1], 0, -Const.DistanceRange[1],
