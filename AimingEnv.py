@@ -4,21 +4,20 @@ import glm
 import math
 import gym
 from typing import Optional, Union
-from gym import logger, spaces
-from gym.utils import seeding
+from gym import  spaces
 from ArmorsInfo import Armors, Const, Time, r_init, get_closest_armor
 
 
 class AimingEnv(gym.Env):
 
     def __init__(self):
-        self.angular_speed = None
+        self.angular_speed = 0
         self.bullet_speed = None
         self.observation_env = None
         self.imu_speed = None
-        self.hostile_speed =None
+        self.hostile_speed =0
         self.hostile_armors = Armors(self.angular_speed, self.hostile_speed,
-                                     glm.vec3(r_init(Const.DistanceRange), 0, r_init(Const.DistanceRange)))
+                                     glm.vec3(r_init(Const.DistanceRange,negative_range=True), 0, -r_init(Const.DistanceRange)))
 
         self.action_space = spaces.Box(low=np.array([-math.pi/2, -math.pi/2]), high=np.array([math.pi/2, math.pi/2]),
                                        dtype=float)
@@ -58,7 +57,7 @@ class AimingEnv(gym.Env):
                                       r_init(Const.HostileSpeedRange))
         self.bullet_speed = glm.vec3(r_init(Const.BulletSpeedRange), 0, 0)
         self.hostile_armors.reset(self.angular_speed, self.hostile_speed,
-                                  glm.vec3(r_init(Const.DistanceRange,True), 0, r_init(Const.DistanceRange)))
+                                  glm.vec3(r_init(Const.DistanceRange,negative_range=True), 0, -r_init(Const.DistanceRange)))
         temp_vector = get_closest_armor(self.hostile_armors.transformed_vector_list)
         self.observation_env = np.array(
             [temp_vector.x, temp_vector.y, temp_vector.z, self.imu_speed.x, self.imu_speed.y, self.imu_speed.z,
@@ -67,7 +66,7 @@ class AimingEnv(gym.Env):
         if not return_info:
             return self.observation_env
         else:
-            return self.observation_env, {}
+            return self.observation_env, {return_info}
 
     def render(self, mode="human"):
         return None

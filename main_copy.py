@@ -3,7 +3,7 @@ import math
 from stable_baselines3 import A2C, DDPG, DQN, PPO
 from AimingEnv import AimingEnv, Time, Const
 
-path = "test.pt"
+path = "test_ppo_1.pt"
 Time.TrainTime=10000000
 ALG=PPO
 env = AimingEnv()

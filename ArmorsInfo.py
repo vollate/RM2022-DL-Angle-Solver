@@ -3,6 +3,8 @@ import glm
 import math
 from typing import List, Union
 
+from numpy import double
+
 import ArmorsInfo
 from Config import Const, Time, r_init
 
@@ -73,7 +75,7 @@ class Armors:
         return None
 
     def verify(self, hostile_speed: glm.vec3, angular_speed: float, initial_bullet_position: glm.vec3,
-               initial_bullet_speed: glm.vec3):  # todo: 加入变速小陀螺
+               initial_bullet_speed: glm.vec3)->float:  # todo: 加入变速小陀螺（画饼）
         temp_origin_vector_list = self.origin_vector_list[:]
         temp_transform = self.transform
         temp_transformed_vector_list = [glm.vec3, glm.vec3, glm.vec3, glm.vec3]
@@ -83,12 +85,10 @@ class Armors:
         passed_verify_time = 0.0
         bullet_position = glm.vec3(initial_bullet_position)
         bullet_speed = glm.vec3(initial_bullet_speed)
-        reversed_direction = True
-
         while passed_verify_time < Time.MaxVerifyTime:
             bullet_position += Time.VerifyUpdateTime * bullet_speed
             bullet_speed += Time.VerifyUpdateTime * (glm.vec3(0, -Const.Gravity, 0) - unit_vector(
-                bullet_speed) * Const.AirDrugForceConstance * modulus_length(bullet_speed, True) / Const.BulletMass)
+                bullet_speed) * Const.AirDrugForceConstance * modulus_length(bullet_speed, square= True) / Const.BulletMass)
             passed_verify_time += Time.VerifyUpdateTime
             self.verify_update_armors(temp_origin_vector_list, temp_transformed_vector_list, temp_transform,
                                       hostile_speed, angular_speed)
@@ -96,10 +96,9 @@ class Armors:
             current_distance = modulus_length(bullet_position - get_closest_armor(temp_transformed_vector_list))
             if current_distance < min_distance:
                 min_distance = current_distance
-                reversed_direction = False
             else:
                 break
         if Const.PrintOut:
             print(min_distance)
             print("end")
-        return 1500 * (0.05 - min_distance) if not reversed_direction else -150000 * min_distance
+        return 0.05 - min_distance
